@@ -1,0 +1,28 @@
+version: '3'
+services:
+  streaming-server:
+    container_name: streaming-server
+    build:
+      context: .
+      dockerfile: rtmp/Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+      - '1935:1935'
+    links:
+       - fb-stunnel-server
+    restart: always
+
+  fb-stunnel-server:
+    container_name: fb-stunnel-server
+    build:
+      context: .
+      dockerfile: stunnel/Dockerfile
+    ports:
+      - '19350:19350'
+    environment:
+      - CLIENT=yes
+      - SERVICE=fblive
+      - ACCEPT=0.0.0.0:19350
+      - CONNECT=live-api-s.facebook.com:443
+    restart: always
